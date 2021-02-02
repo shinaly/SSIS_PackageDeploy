@@ -1,0 +1,68 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+
+trigger:
+- main
+
+pool:
+  name: MSBIAgentPool
+
+steps:
+- task: SSISDeploy@0
+  displayName: 'Deploy SSIS'
+  inputs:
+    sourcePath: 'SSIS_PckgDeployment'
+    destinationType: file
+    destinationPath: '\\MSBIs-sandbox\Users'
+    domainName: 'MSBIs-sandbox'
+    username: AdminUser
+    password: 'Password@123'
+
+
+- task: SSISCatalog@0
+  displayName: 'Configure SSIS Catalog'
+  inputs:
+    configSource: inline
+    configContent: |
+     {
+       "folders": [
+         {
+           "name": "new",
+           "description": "devops demo folder",
+           "projects": [
+             {
+               "name": "SSIS_PckgDeployment",
+               "parameters": [
+                 {
+                   "name": "password",
+                   "container": "Package.dtsx",
+                   "value": "passwd",
+                   "valueType": "referenced"
+                 },
+               ],
+               "references": [
+                 {
+                   "environmentName": "Dev",
+                   "environmentFolder": "SSIS_PckgDeployment"
+                 },
+                 {
+                   "environmentName": "Dev",
+                   "environmentFolder": "."
+                 }
+               ]
+             }
+           ],
+           "environments": [
+             {
+               "name": "Dev",
+               "description": "test",
+             }
+           ]
+         }
+       ]
+     }
+    targetServer: 'MSBIs-sandbox'
+    authType: win
