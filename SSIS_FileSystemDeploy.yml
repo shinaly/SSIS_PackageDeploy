@@ -16,7 +16,7 @@ steps:
   inputs:
     sourcePath: 'SSIS_PckgDeployment'
     destinationType: file
-    destinationPath: '\\MSBIs-sandbox\Users'
+    destinationPath: '\\MSBIs-sandbox\Users\AdminUser\Documents\MSBI\AzureRepo'
     domainName: 'MSBIs-sandbox'
     username: AdminUser
     password: 'Password@123'
